@@ -275,7 +275,61 @@ rviz2 -d ~/ros2_ws/zed_mapeo.rviz --ros-args -p use_sim_time:=false
 
 En la instalación comprobada, la consulta de servicios solo mostró `enable_mapping` y `save_area_memory` entre los relacionados con mapeo y guardado. Por eso esta guía utiliza una grabación del tópico y no inventa un servicio para exportar PLY.
 
-## 12. Si algo no funciona
+## 12. Borrar un mapa guardado
+
+Cada grabación está dentro de una carpeta independiente en `~/ros2_ws/mapas`. Para borrar un mapa debes eliminar **su carpeta completa**, no únicamente `metadata.yaml` o uno de sus archivos de datos.
+
+### 12.1 Detener el uso de esa grabación
+
+Si estás grabando o reproduciendo el mapa que quieres borrar, pulsa **Ctrl+C en la terminal correspondiente** y espera a que termine. No borres una grabación mientras se está escribiendo o reproduciendo.
+
+### 12.2 Localizar el mapa
+
+Abre una terminal y ejecuta:
+
+```bash
+ls -lt ~/ros2_ws/mapas
+```
+
+Identifica la carpeta por su fecha y hora. Para conocer su tamaño:
+
+```bash
+du -sh ~/ros2_ws/mapas/mapa_AAAAMMDD_HHMMSS
+```
+
+**Sustituye `mapa_AAAAMMDD_HHMMSS` por el nombre exacto de la grabación.** No copies ese marcador literalmente.
+
+Si quieres confirmar su contenido antes de borrarla:
+
+```bash
+source /opt/ros/humble/setup.bash
+source ~/ros2_ws/install/setup.bash
+ros2 bag info ~/ros2_ws/mapas/mapa_AAAAMMDD_HHMMSS
+```
+
+### 12.3 Eliminar únicamente esa carpeta
+
+Cuando hayas comprobado que es la grabación correcta, ejecuta con su nombre real:
+
+```bash
+rm -rI -- ~/ros2_ws/mapas/mapa_AAAAMMDD_HHMMSS
+```
+
+La opción es una **I mayúscula**. Solicita confirmación antes del borrado recursivo. Lee la ruta que muestra la pregunta y confirma solamente si corresponde al mapa elegido; si tienes dudas, pulsa **Ctrl+C** para cancelar.
+
+**Este comando no envía los archivos a la papelera. El borrado es permanente.** Si necesitas conservar el mapa, copia antes toda su carpeta a otro disco.
+
+No uses comodines como `mapa_*`: seleccionarían varias grabaciones. No borres la carpeta general `mapas` ni `qos_grabacion.yaml`, que se reutiliza para grabar.
+
+### 12.4 Comprobar el resultado
+
+```bash
+ls -lt ~/ros2_ws/mapas
+```
+
+La carpeta elegida ya no debe aparecer. Las demás grabaciones deben permanecer. Borrar un bag del disco no reinicia ni borra el mapa que esté construyendo la cámara en memoria.
+
+## 13. Si algo no funciona
 
 | Problema | Acción |
 |---|---|
